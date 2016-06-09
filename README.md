@@ -8,11 +8,11 @@ Unix: [![Unix Build Status](http://img.shields.io/travis/jacebrowning/sappy/deve
 
 ### Requirements
 
-* Python 2.7+ or Python 3.3+
+* Python 3.4+
 
 ### Installation
 
-sappy can be installed with pip:
+Install sappy using pip:
 
 ```
 $ pip install sappy
@@ -28,8 +28,24 @@ $ python setup.py install
 
 ## Basic Usage
 
-> TBD
+Build your static website (e.g. an Ember application) for production:
 
-## Documentation
+```
+$ ember build --environment=production
+Building...
+Built project successfully. Stored in "dist/".
+```
 
-Read the full documentation [here](http://sappy.rtfd.io).
+Then serve up the application:
+
+```
+$ sappy
+Serving /home/browning/my_project/dist/ on 8080
+```
+
+It defaults to serving from `./dist/` if available, but this can be overridden:
+
+```
+$ sappy my_build_directory
+Serving /home/browning/my_project/my_build_directory/ on 8080
+```
