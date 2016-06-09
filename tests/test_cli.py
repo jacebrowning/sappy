@@ -1,12 +1,13 @@
-# pylint: disable=missing-docstring,unused-variable,expression-not-assigned
+# pylint: disable=missing-docstring,unused-variable,redefined-outer-name,unused-argument,expression-not-assigned
 
 import os
 import sys
 import subprocess
 import time
 
-import requests
+import pytest
 from expecter import expect
+import requests
 
 
 def cli(*options):
@@ -16,11 +17,19 @@ def cli(*options):
     return process
 
 
+@pytest.fixture
+def temp(tmpdir):
+    tmpdir.chdir()
+
+
+@pytest.fixture
+def temp_with_dist(temp):
+    os.mkdir("dist")
+
+
 def describe_cli():
 
-    def with_defaults(tmpdir):
-        tmpdir.chdir()
-        os.mkdir("dist")
+    def with_defaults(temp_with_dist):
         process = cli()
 
         try:
@@ -30,12 +39,21 @@ def describe_cli():
 
         expect(response.status_code) == 200
 
-    def with_custom_directory(tmpdir):
-        tmpdir.chdir()
+    def with_custom_directory(temp):
         process = cli('.')
 
         try:
             response = requests.get("http://localhost:8080/foobar")
+        finally:
+            process.kill()
+
+        expect(response.status_code) == 200
+
+    def with_custom_port(temp_with_dist):
+        process = cli('--port=1234')
+
+        try:
+            response = requests.get("http://localhost:1234/foobar")
         finally:
             process.kill()
 
