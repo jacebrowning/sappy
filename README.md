@@ -8,7 +8,7 @@ Unix: [![Unix Build Status](http://img.shields.io/travis/jacebrowning/sappy/deve
 
 ### Requirements
 
-* Python 3.5+
+* Python 2.7+ or Python 3.3+
 
 ### Installation
 
@@ -28,14 +28,8 @@ $ python setup.py install
 
 ## Basic Usage
 
-After installation, the package can imported:
-
-```
-$ python
->>> import sappy
->>> sappy.__version__
-```
+> TBD
 
 ## Documentation
 
-Read the full documentation [here](http://jacebrowning.github.io/sappy).
+Read the full documentation [here](http://sappy.rtfd.io).
