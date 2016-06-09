@@ -8,7 +8,7 @@ Unix: [![Unix Build Status](http://img.shields.io/travis/jacebrowning/sappy/deve
 
 ### Requirements
 
-* Python 3.4+
+* Python 3.5+
 
 ### Installation
 
