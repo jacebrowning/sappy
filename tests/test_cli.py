@@ -12,7 +12,7 @@ from expecter import expect
 def cli(*options):
     args = sys.executable, '-m', 'sappy', *options
     process = subprocess.Popen(args)
-    time.sleep(0.25)
+    time.sleep(0.5)
     return process
 
 
