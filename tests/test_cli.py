@@ -9,17 +9,34 @@ import requests
 from expecter import expect
 
 
+def cli(*options):
+    args = sys.executable, '-m', 'sappy', *options
+    process = subprocess.Popen(args)
+    time.sleep(0.25)
+    return process
+
+
 def describe_cli():
 
-    def it_starts_a_server(tmpdir):
+    def with_defaults(tmpdir):
         tmpdir.chdir()
         os.mkdir("dist")
-        process = subprocess.Popen([sys.executable, '-m', 'sappy'])
-        time.sleep(0.25)
+        process = cli()
 
         try:
-            response = requests.get("http://localhost:8080/")
-
-            expect(response.status_code) == 200
+            response = requests.get("http://localhost:8080/foobar")
         finally:
             process.kill()
+
+        expect(response.status_code) == 200
+
+    def with_custom_directory(tmpdir):
+        tmpdir.chdir()
+        process = cli('.')
+
+        try:
+            response = requests.get("http://localhost:8080/foobar")
+        finally:
+            process.kill()
+
+        expect(response.status_code) == 200
