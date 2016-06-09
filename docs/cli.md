@@ -1,6 +1,12 @@
 # Custom Directory
 
-The program will attempt to serve from `dist/` in the current directory. To serve from a custom location:
+The server will attempt to run in one of the following directories:
+
+- `./dist`
+- `./public`
+- `./`
+
+To serve from a custom location:
 
 ```
 $ sappy my/build/folder

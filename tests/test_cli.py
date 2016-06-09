@@ -7,7 +7,10 @@ import time
 
 import pytest
 from expecter import expect
+from click.testing import CliRunner
 import requests
+
+from sappy import server
 
 
 def cli(*options):
@@ -58,3 +61,9 @@ def describe_cli():
             process.kill()
 
         expect(response.status_code) == 200
+
+    def with_an_invalid_directory(temp):
+        runner = CliRunner()
+        result = runner.invoke(server.main, ['unknown/directory'])
+
+        expect(result.exit_code) == 2
