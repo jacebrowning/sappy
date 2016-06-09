@@ -40,7 +40,7 @@ Then serve up the application:
 
 ```
 $ sappy
-Serving /home/browning/my_project/dist/ on 8080
+Serving /home/browning/project/dist/ on 8080
 ```
 
 Check out the [documentation](http://sappy.readthedocs.io/en/latest/cli) or command-line help for additional options:
