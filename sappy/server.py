@@ -1,26 +1,31 @@
 """The HTTP server."""
 
 import os
+import sys
 from pathlib import Path
 from http.server import HTTPServer
-import logging
 
-from . import settings
+import click
+
+from . import __version__, settings
 from .handlers import SinglePageApplicationHandler
 
+sys.argv[0] = 'sappy'
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-log = logging.getLogger(__name__)
 
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('path', default="dist")
+@click.version_option(version=__version__)
+def main(path=None):
+    """Serve a single-page application from a directory."""
+    path, httpd = init(path)
 
-def main():
-    """Run the server."""
-    path, httpd = init()
-
-    print("Serving {d}/ on {p}".format(d=path, p=httpd.server_port))
+    click.echo("Serving {d}/ on {p}".format(d=path, p=httpd.server_port))
     httpd.serve_forever()
 
 
-def init(root="dist"):
+def init(root):
     """Create a new HTTP daemon to run."""
     path = Path(root).resolve()
 
