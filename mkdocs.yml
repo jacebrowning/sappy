@@ -1,0 +1,14 @@
+site_name: sappy
+site_description: Single-page application server for end-to-end testing.
+site_author: Jace Browning
+repo_url: https://github.com/jacebrowning/sappy
+# google_analytics: ['XX-XXXXXXXX-XX', 'auto']
+
+theme: mkdocs
+
+pages:
+- Home: index.md
+- About:
+  - 'Release Notes': about/changelog.md
+  - Contributing: about/contributing.md
+  - License: about/license.md

@@ -1,0 +1,15 @@
+[MESSAGES CONTROL]
+
+disable=locally-disabled,fixme,too-few-public-methods,too-many-public-methods,invalid-name,global-statement,too-many-ancestors
+
+[FORMAT]
+
+max-line-length=80
+
+ignore-long-lines=^.*((https?:)|(pragma:)|(TODO:)).*$
+
+[REPORTS]
+
+reports=no
+
+msg-template={msg_id} ({symbol}):{line:3d},{column}: {msg}
