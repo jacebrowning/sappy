@@ -43,7 +43,7 @@ $ sappy
 Serving /home/browning/my_project/dist/ on 8080
 ```
 
-Check out the [documentation](http://sappy.readthedocs.io/cli) or command-line help for additional options:
+Check out the [documentation](http://sappy.readthedocs.io/en/latest/cli) or command-line help for additional options:
 
 ```
 $ sappy --help
