@@ -8,11 +8,11 @@ Unix: [![Unix Build Status](http://img.shields.io/travis/jacebrowning/sappy/deve
 
 ### Requirements
 
-* Python 3.4+
+* Python 3.5+
 
 ### Installation
 
-Install sappy using pip:
+Install `sappy` using pip:
 
 ```
 $ pip install sappy
@@ -40,12 +40,11 @@ Then serve up the application:
 
 ```
 $ sappy
-Serving /home/browning/my_project/dist/ on 8080
+Serving /home/browning/project/dist/ on 8080
 ```
 
-It defaults to serving from `./dist/` if available, but this can be overridden:
+Check out the [documentation](http://sappy.readthedocs.io/en/latest/cli) or command-line help for additional options:
 
 ```
-$ sappy my_build_directory
-Serving /home/browning/my_project/my_build_directory/ on 8080
+$ sappy --help
 ```
