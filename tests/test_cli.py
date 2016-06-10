@@ -10,7 +10,7 @@ from expecter import expect
 from click.testing import CliRunner
 import requests
 
-from sappy import server
+from sappy.cli import main
 
 
 def cli(*options):
@@ -64,6 +64,6 @@ def describe_cli():
 
     def with_an_invalid_directory(temp):
         runner = CliRunner()
-        result = runner.invoke(server.main, ['unknown/directory'])
+        result = runner.invoke(main, ['unknown/directory'])
 
         expect(result.exit_code) == 2

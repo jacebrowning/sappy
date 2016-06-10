@@ -25,7 +25,7 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    entry_points={'console_scripts': ['sappy = sappy.server:main']},
+    entry_points={'console_scripts': ['sappy = sappy.cli:main']},
 
     long_description=LONG_DESCRIPTION,
     license='MIT',
