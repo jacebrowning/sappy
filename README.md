@@ -18,7 +18,7 @@ $ curl http://localhost:8000/index.html
 ...
 ```
 
-But when used to serve up single-page applications, a `404` is returned whenever one of the pages is accessed directly:
+But when used to serve up single-page applications, a `404` is returned whenever any page other than the index is accessed directly:
 
 ```
 $ curl http://localhost:8000/login
@@ -28,7 +28,7 @@ $ curl http://localhost:8000/login
 ...
 ```
 
-This project builds on the existing web server code to forward all requests to the index.
+This project builds on the existing web server code to forward all requests to the index. The single-page application’s client-side routing can then display the page that corresponds to that request’s URL.
 
 # Setup
 
