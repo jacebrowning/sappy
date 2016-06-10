@@ -1,7 +1,7 @@
 """Entry point to run the package directly."""
 
-from . import server
+from . import cli
 
 
 if __name__ == '__main__':
-    server.main()
+    cli.main()

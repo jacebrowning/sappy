@@ -1,8 +1,8 @@
 """Request handlers."""
 
-import os
-from urllib.parse import urlparse
 from http.server import SimpleHTTPRequestHandler
+from urllib.parse import urlparse
+from pathlib import Path
 
 
 class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
@@ -11,9 +11,8 @@ class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         """Override GETs for unknown paths."""
         params = urlparse(self.path)
-        filepath = '.' + os.sep + params.path
 
-        if os.path.exists(filepath):
+        if Path(params.path).exists():
             super().do_GET()
 
         else:
