@@ -1,7 +1,6 @@
 """The HTTP server."""
 
 import os
-import sys
 from pathlib import Path
 from http.server import HTTPServer
 
@@ -10,7 +9,6 @@ import click
 from . import __version__, settings
 from .handlers import SinglePageApplicationHandler
 
-sys.argv[0] = 'sappy'
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 ReadableDirectory = click.Path(exists=True, readable=True, file_okay=False)
