@@ -29,7 +29,7 @@ def main(root=None, port=None):
 def init(root, port):
     """Create a new HTTP daemon to run."""
     path = Path.cwd()
-    for root in [root, 'dist', 'public']:
+    for root in [root, *settings.DEFAULT_PATHS]:
         if root and Path(root).exists():
             path = Path(root).resolve()  # pylint: disable=redefined-variable-type
             os.chdir(str(path))
