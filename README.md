@@ -7,10 +7,10 @@ Sappy is a simple, single-page application (SPA) web server for end-to-end testi
 The Python standard library includes a web server that works great for serving up files:
 
 ```
-$ python3 -m http.server 8000
-Serving HTTP on 0.0.0.0 port 8000 ...
+$ python3 -m http.server 8080
+Serving HTTP on 0.0.0.0 port 8080 ...
 
-$ curl http://localhost:8000/index.html
+$ curl http://localhost:1234/index.html
 <!DOCTYPE html>
 <html>
   <head>
@@ -21,7 +21,7 @@ $ curl http://localhost:8000/index.html
 But when used to serve up single-page applications, a `404` is returned whenever any page other than the index is accessed directly:
 
 ```
-$ curl http://localhost:8000/login
+$ curl http://localhost:8080/login
 <!DOCTYPE html>
 <html lang=en>
   <title>Error 404 (Not Found)</title
