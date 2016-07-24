@@ -2,14 +2,13 @@
 PROJECT := sappy
 PACKAGE := sappy
 REPOSITORY := jacebrowning/sappy
-SOURCES := Makefile setup.py $(shell find $(PACKAGE) -name '*.py')
+DIRECTORIES := $(PACKAGE) tests
+FILES := Makefile setup.py $(shell find $(DIRECTORIES) -name '*.py')
 
 # Python settings
 ifndef TRAVIS
-ifndef APPVEYOR
 	PYTHON_MAJOR ?= 3
 	PYTHON_MINOR ?= 5
-endif
 endif
 
 # System paths
@@ -75,22 +74,21 @@ INSTALLED_FLAG := $(ENV)/.installed
 DEPENDS_CI_FLAG := $(ENV)/.depends-ci
 DEPENDS_DOC_FLAG := $(ENV)/.depends-doc
 DEPENDS_DEV_FLAG := $(ENV)/.depends-dev
-DOCS_FLAG := $(ENV)/.docs
 ALL_FLAG := $(ENV)/.all
 
 # Main Targets #################################################################
 
 .PHONY: all
 all: depends doc $(ALL_FLAG)
-$(ALL_FLAG): $(SOURCES)
+$(ALL_FLAG): $(FILES)
 	make check
 	@ touch $@  # flag to indicate all setup steps were successful
 
 .PHONY: ci
-ci: check test
+ci: check test ## Run all targets that determine CI status
 
 .PHONY: watch
-watch: depends .clean-test
+watch: depends .clean-test ## Continuously run all CI targets when files chanage
 	@ rm -rf $(FAILED_FLAG)
 	$(SNIFFER)
 
@@ -99,7 +97,7 @@ watch: depends .clean-test
 .PHONY: env
 env: $(PIP) $(INSTALLED_FLAG)
 $(INSTALLED_FLAG): Makefile setup.py requirements.txt
-	VIRTUAL_ENV=$(ENV) $(PYTHON) setup.py develop
+	$(PYTHON) setup.py develop
 	@ touch $@  # flag to indicate package is installed
 
 $(PIP):
@@ -110,7 +108,7 @@ $(PIP):
 # Tools Installation ###########################################################
 
 .PHONY: depends
-depends: depends-ci depends-doc depends-dev
+depends: depends-ci depends-doc depends-dev ## Install all project dependnecies
 
 .PHONY: depends-ci
 depends-ci: env Makefile $(DEPENDS_CI_FLAG)
@@ -140,68 +138,50 @@ endif
 # Documentation ################################################################
 
 .PHONY: doc
-doc: readme verify-readme uml apidocs mkdocs
-
-.PHONY: doc-live
-doc-live: doc
-	eval "sleep 3; open http://127.0.0.1:8000" &
-	$(MKDOCS) serve
-
-.PHONY: read
-read: doc
-	$(OPEN) site/index.html
-	$(OPEN) apidocs/$(PACKAGE)/index.html
-	$(OPEN) README-pypi.html
-	$(OPEN) README-github.html
-
-.PHONY: readme
-readme: depends-doc README-github.html README-pypi.html
-README-github.html: README.md
-	pandoc -f markdown_github -t html -o README-github.html README.md
-README-pypi.html: README.rst
-	$(RST2HTML) README.rst README-pypi.html
-%.rst: %.md
-	pandoc -f markdown_github -t rst -o $@ $<
-
-.PHONY: verify-readme
-verify-readme: $(DOCS_FLAG)
-$(DOCS_FLAG): README.rst CHANGELOG.rst
-	$(PYTHON) setup.py check --restructuredtext --strict --metadata
-	@ touch $@  # flag to indicate README has been checked
+doc: uml pdoc mkdocs ## Run all documentation targets
 
 .PHONY: uml
-uml: depends-doc docs/*.png
-docs/*.png: $(SOURCES)
-	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -a 1 -f ALL -o png --ignore test
+uml: depends-doc docs/*.png ## Generate UML diagrams for classes and packages
+docs/*.png: $(FILES)
+	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -a 1 -f ALL -o png --ignore tests
 	- mv -f classes_$(PACKAGE).png docs/classes.png
 	- mv -f packages_$(PACKAGE).png docs/packages.png
 
-.PHONY: apidocs
-apidocs: depends-doc apidocs/$(PACKAGE)/index.html
-apidocs/$(PACKAGE)/index.html: $(SOURCES)
-	$(PDOC) --html --overwrite $(PACKAGE) --html-dir apidocs
+.PHONY: pdoc
+pdoc: depends-doc pdoc/$(PACKAGE)/index.html  ## Generate API documentaiton from the code
+pdoc/$(PACKAGE)/index.html: $(FILES)
+	$(PDOC) --html --overwrite $(PACKAGE) --html-dir docs/apidocs
 
 .PHONY: mkdocs
-mkdocs: depends-doc site/index.html
+mkdocs: depends-doc site/index.html ## Build the documentation with mkdocs
 site/index.html: mkdocs.yml docs/*.md
+	ln -sf `realpath README.md --relative-to=docs` docs/index.md
+	ln -sf `realpath CHANGELOG.md --relative-to=docs/about` docs/about/changelog.md
+	ln -sf `realpath CONTRIBUTING.md --relative-to=docs/about` docs/about/contributing.md
+	ln -sf `realpath LICENSE.md --relative-to=docs/about` docs/about/licence.md
 	$(MKDOCS) build --clean --strict
+
+.PHONY: mkdocs-live
+mkdocs-live: depends-doc ## Launch and continuously rebuild the mkdocs site
+	eval "sleep 3; open http://127.0.0.1:8000" &
+	$(MKDOCS) serve
 
 # Static Analysis ##############################################################
 
 .PHONY: check
-check: pep8 pep257 pylint
+check: pep8 pep257 pylint ## Run all static analysis targets
 
 .PHONY: pep8
-pep8: depends-ci
-	$(PEP8) $(PACKAGE) tests --config=.pep8rc
+pep8: depends-ci ## Check for convention issues
+	$(PEP8) $(DIRECTORIES) --config=.pep8rc
 
 .PHONY: pep257
-pep257: depends-ci
-	$(PEP257) $(PACKAGE) tests
+pep257: depends-ci ## Check for docstring issues
+	$(PEP257) $(DIRECTORIES)
 
 .PHONY: pylint
-pylint: depends-ci
-	$(PYLINT) $(PACKAGE) tests --rcfile=.pylintrc
+pylint: depends-ci ## Check for code issues
+	$(PYLINT) $(DIRECTORIES) --rcfile=.pylintrc
 
 .PHONY: fix
 fix: depends-dev
@@ -224,7 +204,7 @@ FAILURES := .cache/v/cache/lastfailed
 test: test-all
 
 .PHONY: test-unit
-test-unit: depends-ci
+test-unit: depends-ci ## Run the unit tests
 	@- mv $(FAILURES) $(FAILURES).bak
 	$(PYTEST) $(PYTEST_OPTS) $(PACKAGE)
 	@- mv $(FAILURES).bak $(FAILURES)
@@ -235,7 +215,7 @@ endif
 endif
 
 .PHONY: test-int
-test-int: depends-ci
+test-int: depends-ci ## Run the integration tests
 	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) tests; fi
 	$(PYTEST) $(PYTEST_OPTS) tests
 ifndef TRAVIS
@@ -245,9 +225,9 @@ endif
 endif
 
 .PHONY: test-all
-test-all: depends-ci
-	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) $(PACKAGE) tests; fi
-	$(PYTEST) $(PYTEST_OPTS) $(PACKAGE) tests
+test-all: depends-ci ## Run all the tests
+	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) $(DIRECTORIES); fi
+	$(PYTEST) $(PYTEST_OPTS) $(DIRECTORIES)
 ifndef TRAVIS
 ifndef APPVEYOR
 	$(COVERAGE_SPACE) $(REPOSITORY) overall
@@ -269,13 +249,13 @@ clean-all: clean .clean-env .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
-	find $(PACKAGE) tests -name '*.pyc' -delete
-	find $(PACKAGE) tests -name '__pycache__' -delete
+	find $(DIRECTORIES) -name '*.pyc' -delete
+	find $(DIRECTORIES) -name '__pycache__' -delete
 	rm -rf $(INSTALLED_FLAG) *.egg-info
 
 .PHONY: .clean-doc
 .clean-doc:
-	rm -rf README.rst apidocs *.html docs/*.png site
+	rm -rf README.rst docs/apidocs *.html docs/*.png site
 
 .PHONY: .clean-test
 .clean-test:
@@ -296,21 +276,22 @@ clean-all: clean .clean-env .clean-workspace
 # Release ######################################################################
 
 .PHONY: register-test
-register-test: doc
+register-test: README.rst CHANGELOG.rst ## Register the project on the test PyPI
 	$(PYTHON) setup.py register --strict --repository https://testpypi.python.org/pypi
 
+.PHONY: register
+register: README.rst CHANGELOG.rst ## Register the project on PyPI
+	$(PYTHON) setup.py register --strict
+
 .PHONY: upload-test
-upload-test: register-test
+upload-test: register-test ## Upload the current version to the test PyPI
 	$(PYTHON) setup.py sdist upload --repository https://testpypi.python.org/pypi
 	$(PYTHON) setup.py bdist_wheel upload --repository https://testpypi.python.org/pypi
 	$(OPEN) https://testpypi.python.org/pypi/$(PROJECT)
 
-.PHONY: register
-register: doc
-	$(PYTHON) setup.py register --strict
-
 .PHONY: upload
-upload: .git-no-changes register
+upload: .git-no-changes register ## Upload the current version to PyPI
+	$(PYTHON) setup.py check --restructuredtext --strict --metadata
 	$(PYTHON) setup.py sdist upload
 	$(PYTHON) setup.py bdist_wheel upload
 	$(OPEN) https://pypi.python.org/pypi/$(PROJECT)
@@ -326,6 +307,9 @@ upload: .git-no-changes register
 		exit -1;                                  \
 	fi;
 
+%.rst: %.md
+	pandoc -f markdown_github -t rst -o $@ $<
+
 # System Installation ##########################################################
 
 .PHONY: develop
@@ -339,3 +323,11 @@ install:
 .PHONY: download
 download:
 	$(SYS_PYTHON) -m pip install $(PROJECT)
+
+# Help #########################################################################
+
+.PHONY: help
+help: all
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help

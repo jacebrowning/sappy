@@ -38,7 +38,7 @@ This project builds on the existing web server code to forward all requests to t
 
 ## Installation
 
-Install `sappy` using pip:
+Install `sappy` with pip:
 
 ```
 $ pip install sappy
