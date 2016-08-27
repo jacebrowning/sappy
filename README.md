@@ -6,7 +6,7 @@ Sappy is a simple, single-page application (SPA) web server for end-to-end testi
 
 The Python standard library includes a web server that works great for serving up files:
 
-```
+```sh
 $ python3 -m http.server 8080
 Serving HTTP on 0.0.0.0 port 8080 ...
 
@@ -20,7 +20,7 @@ $ curl http://localhost:1234/index.html
 
 But when used to serve up single-page applications, a `404` is returned whenever any page other than the index is accessed directly:
 
-```
+```sh
 $ curl http://localhost:8080/login
 <!DOCTYPE html>
 <html lang=en>
@@ -40,13 +40,13 @@ This project builds on the existing web server code to forward all requests to t
 
 Install `sappy` with pip:
 
-```
+```sh
 $ pip install sappy
 ```
 
 or directly from the source code:
 
-```
+```sh
 $ git clone https://github.com/jacebrowning/sappy.git
 $ cd sappy
 $ python setup.py install
@@ -56,7 +56,7 @@ $ python setup.py install
 
 Build your static website (e.g. an Ember application) for production:
 
-```
+```sh
 $ ember build --environment=production
 Building...
 Built project successfully. Stored in "dist/".
@@ -64,13 +64,13 @@ Built project successfully. Stored in "dist/".
 
 Then serve up the application:
 
-```
+```sh
 $ sappy
 Serving /home/browning/project/dist/ on 8080
 ```
 
 Check out the [documentation](http://sappy.readthedocs.io/en/latest/cli) or command-line help for additional options:
 
-```
+```sh
 $ sappy --help
 ```

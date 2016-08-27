@@ -2,8 +2,9 @@
 PROJECT := sappy
 PACKAGE := sappy
 REPOSITORY := jacebrowning/sappy
-DIRECTORIES := $(PACKAGE) tests
-FILES := setup.py $(shell find $(DIRECTORIES) -name '*.py')
+PACKAGES := $(PACKAGE) tests
+CONFIG := $(shell ls *.py)
+MODULES := $(shell find $(PACKAGES) -name '*.py') $(CONFIG)
 
 # Python settings
 ifndef TRAVIS
@@ -54,20 +55,8 @@ endif
 PYTHON := $(BIN_)python
 PIP := $(BIN_)pip
 EASY_INSTALL := $(BIN_)easy_install
-RST2HTML := $(PYTHON) $(BIN_)rst2html.py
-PDOC := $(PYTHON) $(BIN_)pdoc
-MKDOCS := $(BIN_)mkdocs
-PEP8 := $(BIN_)pep8
-PEP8RADIUS := $(BIN_)pep8radius
-PEP257 := $(BIN_)pep257
-PYLINT := $(BIN_)pylint
-PYREVERSE := $(BIN_)pyreverse
-NOSE := $(BIN_)nosetests
-PYTEST := $(BIN_)py.test
-COVERAGE := $(BIN_)coverage
-COVERAGE_SPACE := $(BIN_)coverage.space
 SNIFFER := $(BIN_)sniffer
-HONCHO := PYTHONPATH=$(PWD) $(ACTIVATE) && $(BIN_)honcho
+HONCHO := $(ACTIVATE) && $(BIN_)honcho
 
 # MAIN TASKS ###################################################################
 
@@ -75,10 +64,10 @@ HONCHO := PYTHONPATH=$(PWD) $(ACTIVATE) && $(BIN_)honcho
 all: doc
 
 .PHONY: ci
-ci: check test ## Run all targets that determine CI status
+ci: check test ## Run all tasks that determine CI status
 
 .PHONY: watch
-watch: depends .clean-test ## Continuously run all CI targets when files chanage
+watch: depends .clean-test ## Continuously run all CI tasks when files chanage
 	$(SNIFFER)
 
 # SYSTEM DEPENDENCIES ##########################################################
@@ -90,26 +79,29 @@ doctor:  ## Confirm system dependencies are available
 
 # PROJECT DEPENDENCIES #########################################################
 
+DEPENDS := $(ENV)/.depends
 DEPENDS_CI := $(ENV)/.depends-ci
 DEPENDS_DEV := $(ENV)/.depends-dev
 
-env: $(PYTHON) setup.py requirements.txt
-	$(PYTHON) setup.py develop
-	@ touch $@  # flag to indicate package is installed
+env: $(PYTHON)
 
 $(PYTHON):
-	$(SYS_PYTHON) -m venv --clear $(ENV)
+	$(SYS_PYTHON) -m venv $(ENV)
 	$(PYTHON) -m pip install --upgrade pip setuptools
 
 .PHONY: depends
-depends: $(DEPENDS_CI) $(DEPENDS_DEV) ## Install all project dependnecies
+depends: env $(DEPENDS) $(DEPENDS_CI) $(DEPENDS_DEV) ## Install all project dependencies
 
-$(DEPENDS_CI): env requirements/ci.txt
-	$(PIP) install -r requirements/ci.txt
+$(DEPENDS): setup.py requirements.txt
+	$(PYTHON) setup.py develop
 	@ touch $@  # flag to indicate dependencies are installed
 
-$(DEPENDS_DEV): env requirements/dev.txt
-	$(PIP) install pip -r requirements/dev.txt
+$(DEPENDS_CI): requirements/ci.txt
+	$(PIP) install --upgrade -r $^
+	@ touch $@  # flag to indicate dependencies are installed
+
+$(DEPENDS_DEV): requirements/dev.txt
+	$(PIP) install --upgrade -r $^
 ifdef WINDOWS
 	@ echo "Manually install pywin32: https://sourceforge.net/projects/pywin32/files/pywin32"
 else ifdef MAC
@@ -121,26 +113,35 @@ endif
 
 # CHECKS #######################################################################
 
+PEP8 := $(BIN_)pep8
+PEP8RADIUS := $(BIN_)pep8radius
+PEP257 := $(BIN_)pep257
+PYLINT := $(BIN_)pylint
+
 .PHONY: check
-check: pep8 pep257 pylint ## Run all static analysis targets
+check: pep8 pep257 pylint ## Run linters and static analysis
 
 .PHONY: pep8
 pep8: depends ## Check for convention issues
-	$(PEP8) $(DIRECTORIES) --config=.pep8rc
+	$(PEP8) $(PACKAGES) $(CONFIG) --config=.pep8rc
 
 .PHONY: pep257
 pep257: depends ## Check for docstring issues
-	$(PEP257) $(DIRECTORIES)
+	$(PEP257) $(PACKAGES) $(CONFIG)
 
 .PHONY: pylint
 pylint: depends ## Check for code issues
-	$(PYLINT) $(DIRECTORIES) --rcfile=.pylintrc
+	$(PYLINT) $(PACKAGES) $(CONFIG) --rcfile=.pylintrc
 
 .PHONY: fix
 fix: depends
 	$(PEP8RADIUS) --docformatter --in-place
 
 # TESTS ########################################################################
+
+PYTEST := $(BIN_)py.test
+COVERAGE := $(BIN_)coverage
+COVERAGE_SPACE := $(BIN_)coverage.space
 
 RANDOM_SEED ?= $(shell date +%s)
 
@@ -179,8 +180,8 @@ endif
 
 .PHONY: test-all
 test-all: depends ## Run all the tests
-	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) $(DIRECTORIES); fi
-	$(PYTEST) $(PYTEST_OPTS) $(DIRECTORIES)
+	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) $(PACKAGES); fi
+	$(PYTEST) $(PYTEST_OPTS) $(PACKAGES)
 ifndef TRAVIS
 ifndef APPVEYOR
 	$(COVERAGE_SPACE) $(REPOSITORY) overall
@@ -193,22 +194,26 @@ read-coverage:
 
 # DOCUMENTATION ################################################################
 
+PYREVERSE := $(BIN_)pyreverse
+PDOC := $(PYTHON) $(BIN_)pdoc
+MKDOCS := $(BIN_)mkdocs
+
 PDOC_INDEX := docs/apidocs/$(PACKAGE)/index.html
 MKDOCS_INDEX := site/index.html
 
 .PHONY: doc
-doc: uml pdoc mkdocs ## Run all documentation targets
+doc: uml pdoc mkdocs ## Run documentation generators
 
 .PHONY: uml
 uml: depends docs/*.png ## Generate UML diagrams for classes and packages
-docs/*.png: $(FILES)
+docs/*.png: $(MODULES)
 	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -a 1 -f ALL -o png --ignore tests
 	- mv -f classes_$(PACKAGE).png docs/classes.png
 	- mv -f packages_$(PACKAGE).png docs/packages.png
 
 .PHONY: pdoc
 pdoc: depends $(PDOC_INDEX)  ## Generate API documentaiton with pdoc
-$(PDOC_INDEX): $(FILES)
+$(PDOC_INDEX): $(MODULES)
 	$(PDOC) --html --overwrite $(PACKAGE) --html-dir docs/apidocs
 	@ touch $@
 
@@ -218,13 +223,26 @@ $(MKDOCS_INDEX): mkdocs.yml docs/*.md
 	ln -sf `realpath README.md --relative-to=docs` docs/index.md
 	ln -sf `realpath CHANGELOG.md --relative-to=docs/about` docs/about/changelog.md
 	ln -sf `realpath CONTRIBUTING.md --relative-to=docs/about` docs/about/contributing.md
-	ln -sf `realpath LICENSE.md --relative-to=docs/about` docs/about/licence.md
+	ln -sf `realpath LICENSE.md --relative-to=docs/about` docs/about/license.md
 	$(MKDOCS) build --clean --strict
 
 .PHONY: mkdocs-live
-mkdocs-live: depends ## Launch and continuously rebuild the mkdocs site
+mkdocs-live: mkdocs ## Launch and continuously rebuild the mkdocs site
 	eval "sleep 3; open http://127.0.0.1:8000" &
 	$(MKDOCS) serve
+
+# BUILD ########################################################################
+
+PYINSTALLER := $(BIN_)pyinstaller
+PYINSTALLER_MAKESPEC := $(BIN_)pyi-makespec
+
+.PHONY: exe
+exe: depends $(PROJECT).spec
+	# For framework/shared support: https://github.com/yyuu/pyenv/wiki
+	$(PYINSTALLER) $(PROJECT).spec --noconfirm --clean
+
+$(PROJECT).spec:
+	$(PYINSTALLER_MAKESPEC) $(PACKAGE)/__main__.py --noupx --onefile --windowed --name=$(PROJECT)
 
 # RELEASE ######################################################################
 
@@ -266,15 +284,15 @@ upload: .git-no-changes register ## Upload the current version to PyPI
 # CLEANUP ######################################################################
 
 .PHONY: clean
-clean: .clean-dist .clean-test .clean-doc .clean-build
+clean: .clean-dist .clean-test .clean-doc .clean-build ## Delete all generated and temporary files
 
 .PHONY: clean-all
 clean-all: clean .clean-env .clean-workspace
 
 .PHONY: .clean-build
 .clean-build:
-	find $(DIRECTORIES) -name '*.pyc' -delete
-	find $(DIRECTORIES) -name '__pycache__' -delete
+	find $(PACKAGES) -name '*.pyc' -delete
+	find $(PACKAGES) -name '__pycache__' -delete
 	rm -rf *.egg-info
 
 .PHONY: .clean-doc
