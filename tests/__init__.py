@@ -1,1 +1,1 @@
-"""Integration tests for the `sappy` package."""
+"""Integration tests for the package."""

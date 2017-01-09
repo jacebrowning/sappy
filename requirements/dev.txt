@@ -7,12 +7,14 @@ mkdocs
 pygments
 
 # Tooling
-pep8radius
 sniffer
 
 # Runner
 honcho
 
-# Release
-pyinstaller
+# Build
 wheel
+pyinstaller
+
+# Release
+twine
