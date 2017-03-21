@@ -11,8 +11,9 @@ class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         """Override GETs for unknown paths."""
         params = urlparse(self.path)
+        path = Path(params.path.strip('/'))
 
-        if Path(params.path).exists():
+        if path.exists():
             super().do_GET()
 
         else:

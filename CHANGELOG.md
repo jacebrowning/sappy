@@ -1,5 +1,9 @@
 # Revision History
 
+## 1.0.1 (2017/03/21)
+
+- Fixed handling of relative paths in assets.
+
 ## 1.0 (2017/01/09)
 
 - Initial stable release.
