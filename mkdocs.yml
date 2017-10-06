@@ -7,7 +7,9 @@ theme: readthedocs
 
 pages:
 - Home: index.md
-- Command-line Interface: cli.md
+- Options:
+  - Command-line: cli.md
+  - Environment: environment.md
 - About:
   - Release Notes: about/changelog.md
   - Contributing: about/contributing.md

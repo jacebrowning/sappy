@@ -24,7 +24,7 @@ The default port is 8080. To use a custom port:
 $ sappy --port 4200
 ```
 
-# Actions
+## Additional Actions
 
 To open the site's index automatically:
 

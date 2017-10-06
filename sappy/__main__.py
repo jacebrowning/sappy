@@ -1,6 +1,6 @@
 """Entry point to run the package directly."""
 
-from . import cli
+from sappy import cli
 
 
 if __name__ == '__main__':

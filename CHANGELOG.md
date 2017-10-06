@@ -1,5 +1,9 @@
 # Revision History
 
+## 1.1 (unreleased)
+
+- Added basic authentication support via `SAPPY_BASIC_AUTH`.
+
 ## 1.0.1 (2017/03/21)
 
 - Fixed handling of relative paths in assets.
