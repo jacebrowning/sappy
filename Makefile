@@ -8,60 +8,15 @@ PACKAGES := $(PACKAGE) tests
 CONFIG := $(wildcard *.py)
 MODULES := $(wildcard $(PACKAGE)/*.py)
 
-# Python settings
-ifndef TRAVIS
-	PYTHON_MAJOR ?= 3
-	PYTHON_MINOR ?= 5
-endif
-
-# System paths
-PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
-ifneq ($(findstring win32, $(PLATFORM)), )
-	WINDOWS := true
-	SYS_PYTHON_DIR := C:\\Python$(PYTHON_MAJOR)$(PYTHON_MINOR)
-	SYS_PYTHON := $(SYS_PYTHON_DIR)\\python.exe
-	# https://bugs.launchpad.net/virtualenv/+bug/449537
-	export TCL_LIBRARY=$(SYS_PYTHON_DIR)\\tcl\\tcl8.5
-else
-	ifneq ($(findstring darwin, $(PLATFORM)), )
-		MAC := true
-	else
-		LINUX := true
-	endif
-	SYS_PYTHON := python$(PYTHON_MAJOR)
-	ifdef PYTHON_MINOR
-		SYS_PYTHON := $(SYS_PYTHON).$(PYTHON_MINOR)
-	endif
-endif
-
 # Virtual environment paths
-ifdef TRAVIS
-	ENV := $(shell dirname $(shell dirname $(shell which $(SYS_PYTHON))))/
-else
-	ENV := env
-endif
-ifneq ($(findstring win32, $(PLATFORM)), )
-	BIN := $(ENV)/Scripts
-	ACTIVATE := $(BIN)/activate.bat
-	OPEN := cmd /c start
-else
-	BIN := $(ENV)/bin
-	ACTIVATE := . $(BIN)/activate
-	ifneq ($(findstring cygwin, $(PLATFORM)), )
-		OPEN := cygstart
-	else
-		OPEN := open
-	endif
-endif
-
-# Virtual environment executables
-PYTHON := $(BIN)/python
-PIP := $(BIN)/pip
-EASY_INSTALL := $(BIN)/easy_install
-SNIFFER := $(BIN)/sniffer
-HONCHO := $(ACTIVATE) && $(BIN)/honcho
+export PIPENV_SHELL_COMPAT=true
+export PIPENV_VENV_IN_PROJECT=true
+export PIPENV_IGNORE_VIRTUALENVS=true
+ENV := .venv
 
 # MAIN TASKS ###################################################################
+
+SNIFFER := pipenv run sniffer
 
 .PHONY: all
 all: install
@@ -71,11 +26,12 @@ ci: check test ## Run all tasks that determine CI status
 
 .PHONY: watch
 watch: install .clean-test ## Continuously run all CI tasks when files chanage
+	@ pipenv run pip install MacFSEvents || pipenv run pip install pywin32 || pipenv run pip install pyinotify || true
 	$(SNIFFER)
 
 .PHONY: run ## Start the program
 run: install
-	$(PYTHON) $(PACKAGE)/__main__.py
+	pipenv run python $(PACKAGE)/__main__.py
 
 # SYSTEM DEPENDENCIES ##########################################################
 
@@ -85,133 +41,108 @@ doctor:  ## Confirm system dependencies are available
 
 # PROJECT DEPENDENCIES #########################################################
 
-DEPS_CI := $(ENV)/.install-ci
-DEPS_DEV := $(ENV)/.install-dev
-DEPS_BASE := $(ENV)/.install-base
+DEPENDENCIES := $(ENV)/.installed
+METADATA := *.egg-info
 
 .PHONY: install
-install: $(DEPS_CI) $(DEPS_DEV) $(DEPS_BASE) ## Install all project dependencies
+install: $(DEPENDENCIES) $(METADATA)
 
-$(DEPS_CI): requirements/ci.txt $(PIP)
-	$(PIP) install --upgrade -r $<
-	@ touch $@  # flag to indicate dependencies are installed
-
-$(DEPS_DEV): requirements/dev.txt $(PIP)
-	$(PIP) install --upgrade -r $<
-ifdef WINDOWS
-	@ echo "Manually install pywin32: https://sourceforge.net/projects/pywin32/files/pywin32"
-else ifdef MAC
-	$(PIP) install --upgrade pync MacFSEvents
-else ifdef LINUX
-	$(PIP) install --upgrade pyinotify
-endif
-	@ touch $@  # flag to indicate dependencies are installed
-
-$(DEPS_BASE): setup.py requirements.txt $(PYTHON)
-	$(PYTHON) setup.py develop
-	@ touch $@  # flag to indicate dependencies are installed
-
-$(PIP): $(PYTHON)
-	$(PYTHON) -m pip install --upgrade pip setuptools
+$(DEPENDENCIES): Pipfile*
+	pipenv install --dev
 	@ touch $@
 
-$(PYTHON):
-	$(SYS_PYTHON) -m venv --clear $(ENV)
+$(METADATA): setup.py
+	pipenv run python setup.py develop
+	@ touch $@
 
 # CHECKS #######################################################################
 
-PYLINT := $(BIN)/pylint
-PYCODESTYLE := $(BIN)/pycodestyle
-PYDOCSTYLE := $(BIN)/pydocstyle
+PYLINT := pipenv run pylint
+PYCODESTYLE := pipenv run pycodestyle
+PYDOCSTYLE := pipenv run pydocstyle
 
 .PHONY: check
 check: pylint pycodestyle pydocstyle ## Run linters and static analysis
 
 .PHONY: pylint
-pylint: install ## Check for code issues
+pylint: install
 	$(PYLINT) $(PACKAGES) $(CONFIG) --rcfile=.pylint.ini
 
 .PHONY: pycodestyle
-pycodestyle: install ## Check for code conventions
+pycodestyle: install
 	$(PYCODESTYLE) $(PACKAGES) $(CONFIG) --config=.pycodestyle.ini
 
 .PHONY: pydocstyle
-pydocstyle: install ## Check for docstring conventions
+pydocstyle: install
 	$(PYDOCSTYLE) $(PACKAGES) $(CONFIG)
 
 # TESTS ########################################################################
 
-PYTEST := $(BIN)/py.test
-COVERAGE := $(BIN)/coverage
-COVERAGE_SPACE := $(BIN)/coverage.space
+PYTEST := pipenv run py.test
+COVERAGE := pipenv run coverage
+COVERAGE_SPACE := pipenv run coverage.space
 
 RANDOM_SEED ?= $(shell date +%s)
-
-PYTEST_CORE_OPTS := --doctest-modules -ra -vv
-PYTEST_COV_OPTS := --cov=$(PACKAGE) --no-cov-on-fail --cov-report=term-missing --cov-report=html
-PYTEST_RANDOM_OPTS := --random --random-seed=$(RANDOM_SEED)
-
-PYTEST_OPTS := $(PYTEST_CORE_OPTS) $(PYTEST_COV_OPTS) $(PYTEST_RANDOM_OPTS)
-PYTEST_OPTS_FAILFAST := $(PYTEST_OPTS) --last-failed --exitfirst
-
 FAILURES := .cache/v/cache/lastfailed
 REPORTS ?= xmlreport
 
+PYTEST_CORE_OPTIONS := -ra -vv
+PYTEST_COV_OPTIONS := --cov=$(PACKAGE) --no-cov-on-fail --cov-report=term-missing:skip-covered --cov-report=html
+PYTEST_RANDOM_OPTIONS := --random --random-seed=$(RANDOM_SEED)
+
+PYTEST_OPTIONS := $(PYTEST_CORE_OPTIONS) $(PYTEST_RANDOM_OPTIONS)
+ifndef DISABLE_COVERAGE
+PYTEST_OPTIONS += $(PYTEST_COV_OPTIONS)
+endif
+PYTEST_RERUN_OPTIONS := $(PYTEST_CORE_OPTIONS) --last-failed --exitfirst
+
 .PHONY: test
-test: test-all
+test: test-all ## Run unit and integration tests
 
 .PHONY: test-unit
-test-unit: install ## Run the unit tests
+test-unit: install
 	@- mv $(FAILURES) $(FAILURES).bak
-	$(PYTEST) $(PYTEST_OPTS) $(PACKAGE) --junitxml=$(REPORTS)/unit.xml
+	$(PYTEST) $(PYTEST_OPTIONS) $(PACKAGE) --junitxml=$(REPORTS)/unit.xml
 	@- mv $(FAILURES).bak $(FAILURES)
 	$(COVERAGE_SPACE) $(REPOSITORY) unit
 
 .PHONY: test-int
-test-int: install ## Run the integration tests
-	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) tests; fi
+test-int: install
+	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_RERUN_OPTIONS) tests; fi
 	@ rm -rf $(FAILURES)
-	$(PYTEST) $(PYTEST_OPTS) tests --junitxml=$(REPORTS)/integration.xml
+	$(PYTEST) $(PYTEST_OPTIONS) tests --junitxml=$(REPORTS)/integration.xml
 	$(COVERAGE_SPACE) $(REPOSITORY) integration
 
 .PHONY: test-all
-test-all: install ## Run all the tests
-	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_OPTS_FAILFAST) $(PACKAGES); fi
+test-all: install
+	@ if test -e $(FAILURES); then $(PYTEST) $(PYTEST_RERUN_OPTIONS) $(PACKAGES); fi
 	@ rm -rf $(FAILURES)
-	$(PYTEST) $(PYTEST_OPTS) $(PACKAGES) --junitxml=$(REPORTS)/overall.xml
+	$(PYTEST) $(PYTEST_OPTIONS) $(PACKAGES) --junitxml=$(REPORTS)/overall.xml
 	$(COVERAGE_SPACE) $(REPOSITORY) overall
 
 .PHONY: read-coverage
 read-coverage:
-	$(OPEN) htmlcov/index.html
+	bin/open htmlcov/index.html
 
 # DOCUMENTATION ################################################################
 
-PYREVERSE := $(BIN)/pyreverse
-PDOC := $(PYTHON) $(BIN)/pdoc
-MKDOCS := $(BIN)/mkdocs
+PYREVERSE := pipenv run pyreverse
+MKDOCS := pipenv run mkdocs
 
-PDOC_INDEX := docs/apidocs/$(PACKAGE)/index.html
 MKDOCS_INDEX := site/index.html
 
 .PHONY: doc
-doc: uml pdoc mkdocs ## Run documentation generators
+doc: uml mkdocs ## Generate documentation
 
 .PHONY: uml
-uml: install docs/*.png ## Generate UML diagrams for classes and packages
+uml: install docs/*.png
 docs/*.png: $(MODULES)
 	$(PYREVERSE) $(PACKAGE) -p $(PACKAGE) -a 1 -f ALL -o png --ignore tests
 	- mv -f classes_$(PACKAGE).png docs/classes.png
 	- mv -f packages_$(PACKAGE).png docs/packages.png
 
-.PHONY: pdoc
-pdoc: install $(PDOC_INDEX)  ## Generate API documentaiton with pdoc
-$(PDOC_INDEX): $(MODULES)
-	$(PDOC) --html --overwrite $(PACKAGE) --html-dir docs/apidocs
-	@ touch $@
-
 .PHONY: mkdocs
-mkdocs: install $(MKDOCS_INDEX) ## Build the documentation site with mkdocs
+mkdocs: install $(MKDOCS_INDEX)
 $(MKDOCS_INDEX): mkdocs.yml docs/*.md
 	ln -sf `realpath README.md --relative-to=docs` docs/index.md
 	ln -sf `realpath CHANGELOG.md --relative-to=docs/about` docs/about/changelog.md
@@ -220,14 +151,14 @@ $(MKDOCS_INDEX): mkdocs.yml docs/*.md
 	$(MKDOCS) build --clean --strict
 
 .PHONY: mkdocs-live
-mkdocs-live: mkdocs ## Launch and continuously rebuild the mkdocs site
-	eval "sleep 3; open http://127.0.0.1:8000" &
+mkdocs-live: mkdocs
+	eval "sleep 3; bin/open http://127.0.0.1:8000" &
 	$(MKDOCS) serve
 
 # BUILD ########################################################################
 
-PYINSTALLER := $(BIN)/pyinstaller
-PYINSTALLER_MAKESPEC := $(BIN)/pyi-makespec
+PYINSTALLER := pipenv run pyinstaller
+PYINSTALLER_MAKESPEC := pipenv run pyi-makespec
 
 DIST_FILES := dist/*.tar.gz dist/*.whl
 EXE_FILES := dist/$(PROJECT).*
@@ -236,9 +167,9 @@ EXE_FILES := dist/$(PROJECT).*
 dist: install $(DIST_FILES)
 $(DIST_FILES): $(MODULES) README.rst CHANGELOG.rst
 	rm -f $(DIST_FILES)
-	$(PYTHON) setup.py check --restructuredtext --strict --metadata
-	$(PYTHON) setup.py sdist
-	$(PYTHON) setup.py bdist_wheel
+	pipenv run python setup.py check --restructuredtext --strict --metadata
+	pipenv run python setup.py sdist
+	pipenv run python setup.py bdist_wheel
 
 %.rst: %.md
 	pandoc -f markdown_github -t rst -o $@ $<
@@ -254,7 +185,7 @@ $(PROJECT).spec:
 
 # RELEASE ######################################################################
 
-TWINE := $(BIN)/twine
+TWINE := pipenv run twine
 
 .PHONY: register
 register: dist ## Register the project on PyPI
@@ -265,8 +196,8 @@ register: dist ## Register the project on PyPI
 
 .PHONY: upload
 upload: .git-no-changes register ## Upload the current version to PyPI
-	$(TWINE) upload dist/*
-	$(OPEN) https://pypi.python.org/pypi/$(PROJECT)
+	$(TWINE) upload dist/*.*
+	bin/open https://pypi.python.org/pypi/$(PROJECT)
 
 .PHONY: .git-no-changes
 .git-no-changes:

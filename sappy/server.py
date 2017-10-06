@@ -8,12 +8,12 @@ from . import __version__, settings
 from .handlers import SinglePageApplicationHandler
 
 
-def init(root, port):
+def init(custom_root, port):
     """Create a new HTTP daemon to run."""
     path = Path.cwd()
-    for root in [root, *settings.DEFAULT_PATHS]:
+    for root in [custom_root, *settings.DEFAULT_PATHS]:
         if root and Path(root).exists():
-            path = Path(root).resolve()  # pylint: disable=redefined-variable-type
+            path = Path(root).resolve()
             os.chdir(str(path))
             break
 
