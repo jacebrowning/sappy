@@ -10,7 +10,7 @@ The Python standard library includes a web server that works great for serving u
 $ python3 -m http.server 8080
 Serving HTTP on 0.0.0.0 port 8080 ...
 
-$ curl http://localhost:1234/index.html
+$ curl http://localhost:8080/index.html
 <!DOCTYPE html>
 <html>
   <head>
