@@ -22,3 +22,4 @@ def get_address(port=None):
 def get_basic_auth():
     if BASIC_AUTH:
         return "Basic " + base64.b64encode(BASIC_AUTH.encode()).decode()
+    return None

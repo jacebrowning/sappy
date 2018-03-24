@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-"""Setup script for the package."""
-
 import os
 import sys
 
@@ -26,7 +24,7 @@ def read_package_variable(key, filename='__init__.py'):
             parts = line.strip().split(' ', 2)
             if parts[:-1] == [key, '=']:
                 return parts[-1].strip("'")
-    sys.exit("'{0}' not found in '{1}'".format(key, module_path))
+    sys.exit("'%s' not found in '%s'", key, module_path)
 
 
 def build_description():
