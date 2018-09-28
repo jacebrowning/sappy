@@ -9,7 +9,7 @@ sys.argv[0] = 'sappy'  # use a consistent name regardless of program invocation
 DEFAULT_PATHS = 'dist', 'site', '_site', 'public'
 
 HOST = os.getenv('SAPPY_HOST', "")
-PORT = int(os.getenv('SAPPY_PORT', 8080))
+PORT = int(os.getenv('SAPPY_PORT', '8080'))
 
 BASIC_AUTH = os.getenv('SAPPY_BASIC_AUTH', "")
 

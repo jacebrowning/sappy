@@ -5,7 +5,7 @@ repo_url: https://github.com/jacebrowning/sappy
 
 theme: readthedocs
 
-pages:
+nav:
 - Home: index.md
 - Options:
   - Command-line: cli.md
