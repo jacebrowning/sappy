@@ -10,7 +10,7 @@ python_version = "3"
 
 [packages]
 
-click = "~= 6.0"
+click = "~=6.7"
 
 [dev-packages]
 
@@ -18,13 +18,14 @@ click = "~= 6.0"
 pylint = "*"
 pycodestyle = "*"
 pydocstyle = "*"
+isort = "~=4.3.4"
 
 # Testing
 pytest = "~=3.3"
 pytest-describe = "*"
 pytest-expecter = "~=1.1"
 pytest-random = "*"
-pytest-cov = "*"
+pytest-cov = "~=2.6.0"
 freezegun = "*"
 
 # Reports
