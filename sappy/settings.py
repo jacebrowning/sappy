@@ -1,17 +1,18 @@
 """Settings loaded from the environment."""
 
+import base64
 import os
 import sys
-import base64
 
-sys.argv[0] = 'sappy'  # use a consistent name regardless of program invocation
 
-DEFAULT_PATHS = 'dist', 'site', '_site', 'public'
+sys.argv[0] = "sappy"  # use a consistent name regardless of program invocation
 
-HOST = os.getenv('SAPPY_HOST', "")
-PORT = int(os.getenv('SAPPY_PORT', '8080'))
+DEFAULT_PATHS = "dist", "site", "_site", "public"
 
-BASIC_AUTH = os.getenv('SAPPY_BASIC_AUTH', "")
+HOST = os.getenv("SAPPY_HOST", "")
+PORT = int(os.getenv("SAPPY_PORT", "8080"))
+
+BASIC_AUTH = os.getenv("SAPPY_BASIC_AUTH", "")
 
 
 def get_address(port=None):

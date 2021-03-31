@@ -1,5 +1,4 @@
 """Configuration file for sniffer."""
-# pylint: disable=superfluous-parens,bad-continuation,unpacking-non-sequence
 
 import time
 import subprocess
@@ -32,7 +31,7 @@ class Options:
 @select_runnable('run_targets')
 @file_validator
 def python_files(filename):
-    return filename.endswith('.py')
+    return filename.endswith('.py') and '.py.' not in filename
 
 
 @select_runnable('run_targets')

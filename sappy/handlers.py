@@ -1,8 +1,8 @@
 """Request handlers."""
 
 from http.server import SimpleHTTPRequestHandler
-from urllib.parse import urlparse
 from pathlib import Path
+from urllib.parse import urlparse
 
 from . import settings
 
@@ -13,15 +13,15 @@ class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         """Override GETs for unknown paths."""
         params = urlparse(self.path)
-        path = Path(params.path.strip('/'))
+        path = Path(params.path.strip("/"))
 
         if settings.BASIC_AUTH:
-            basic_auth = self.headers.get('Authorization')
+            basic_auth = self.headers.get("Authorization")
 
             if basic_auth != settings.get_basic_auth():
                 self.send_response(401)
-                self.send_header('WWW-Authenticate', 'Basic realm=\"Test\"')
-                self.send_header('Content-type', 'text/html')
+                self.send_header("WWW-Authenticate", 'Basic realm="Test"')
+                self.send_header("Content-type", "text/html")
                 self.end_headers()
                 return None
 
@@ -29,8 +29,8 @@ class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
             return super().do_GET()
 
         self.send_response(200)
-        self.send_header('Content-Type', 'text/html')
+        self.send_header("Content-Type", "text/html")
         self.end_headers()
-        with open("index.html", 'rb') as rfile:
-            self.copyfile(rfile, self.wfile)
+        with open("index.html", "rb") as rfile:
+            self.copyfile(rfile, self.wfile)  # type: ignore
         return None

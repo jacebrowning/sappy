@@ -8,15 +8,14 @@ from sappy import settings
 
 
 def describe_get_address():
-
     def it_loads_host_from_env(monkeypatch):
-        monkeypatch.setenv('SAPPY_HOST', "foobar")
+        monkeypatch.setenv("SAPPY_HOST", "foobar")
         reload(settings)
 
         expect(settings.get_address()) == ("foobar", 8080)
 
     def it_loads_port_from_env(monkeypatch):
-        monkeypatch.setenv('SAPPY_PORT', "1234")
+        monkeypatch.setenv("SAPPY_PORT", "1234")
         reload(settings)
 
         expect(settings.get_address()) == ("", 1234)

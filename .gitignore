@@ -3,6 +3,8 @@
 *.egg-info
 __pycache__
 .ipynb_checkpoints
+setup.py
+pip-wheel-metadata/
 
 # Temporary OS files
 Icon*
@@ -20,7 +22,6 @@ Icon*
 /docs/apidocs/
 /site/
 /*.html
-/*.rst
 /docs/*.png
 
 # Google Drive
@@ -30,14 +31,9 @@ Icon*
 *.gdraw
 
 # Testing and coverage results
-/.pytest_cache/
 /.coverage
 /.coverage.*
 /htmlcov/
-/xmlreport/
-/pyunit.xml
-/tmp/
-*.tmp
 
 # Build and release directories
 /build/

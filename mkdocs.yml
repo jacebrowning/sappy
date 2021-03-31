@@ -1,16 +1,18 @@
-site_name: sappy
+site_name: Sappy
 site_description: Single-page application server for end-to-end testing.
 site_author: Jace Browning
+
 repo_url: https://github.com/jacebrowning/sappy
+edit_uri: https://github.com/jacebrowning/sappy/edit/develop/docs
 
 theme: readthedocs
 
 nav:
-- Home: index.md
-- Options:
-  - Command-line: cli.md
-  - Environment: environment.md
-- About:
-  - Release Notes: about/changelog.md
-  - Contributing: about/contributing.md
-  - License: about/license.md
+  - Home: index.md
+  - Options:
+    - Command-line: cli.md
+    - Environment: environment.md
+  - About:
+    - Release Notes: about/changelog.md
+    - Contributing: about/contributing.md
+    - License: about/license.md

@@ -1,8 +1,8 @@
 """The HTTP server."""
 
 import os
-from pathlib import Path
 from http.server import HTTPServer
+from pathlib import Path
 
 from . import __version__, settings
 from .handlers import SinglePageApplicationHandler
