@@ -16,9 +16,9 @@ repository = "https://github.com/jacebrowning/sappy"
 
 keywords = [
     "testing",
-    "command-line",
-    "end-to-end-testing",
-    "single-page-applications",
+    "end-to-end",
+    "single-page-application",
+    "web-servicer",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
