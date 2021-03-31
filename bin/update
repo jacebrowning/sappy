@@ -15,7 +15,7 @@ CONFIG = {
     "email": "jacebrowning@gmail.com",
     "github_username": "jacebrowning",
     "github_repo": "sappy",
-    "default_branch": "develop",
+    "default_branch": "main",
     "project_name": "sappy",
     "package_name": "sappy",
     "project_short_description": "Single-page application server for end-to-end testing.",
