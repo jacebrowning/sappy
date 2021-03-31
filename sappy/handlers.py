@@ -23,14 +23,23 @@ class SinglePageApplicationHandler(SimpleHTTPRequestHandler):
                 self.send_header("WWW-Authenticate", 'Basic realm="Test"')
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
-                return None
+                return
 
         if path.exists():
-            return super().do_GET()
+            super().do_GET()
+            return
 
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html")
-        self.end_headers()
-        with open("index.html", "rb") as rfile:
-            self.copyfile(rfile, self.wfile)  # type: ignore
-        return None
+        htmlpath = Path(str(path) + ".html")
+        if htmlpath.exists():
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            with htmlpath.open("rb") as rfile:
+                self.copyfile(rfile, self.wfile)  # type: ignore
+
+        else:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            with Path("index.html").open("rb") as rfile:
+                self.copyfile(rfile, self.wfile)  # type: ignore

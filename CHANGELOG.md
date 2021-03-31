@@ -1,9 +1,13 @@
 # Revision History
 
-## 1.1 (unreleased)
+## 1.2 (beta)
 
 - Added basic authentication support via `SAPPY_BASIC_AUTH`.
 - Dropped support for Python 3.5.
+
+## 1.1 (2017/03/21)
+
+- Added handling of HTML pages without the extension.
 
 ## 1.0.1 (2017/03/21)
 
