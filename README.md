@@ -1,4 +1,4 @@
-[![Unix Build Status](https://img.shields.io/github/workflow/status/jacebrowning/sappy/main?label=unix)](https://github.com/jacebrowning/sappy/actions?query=branch%3Amain)
+[![Unix Build Status](https://img.shields.io/github/actions/workflow/status/jacebrowning/sappy/main.yml?branch=main&label=linux)](https://github.com/jacebrowning/sappy/actions)
 [![Windows Build Status](https://img.shields.io/appveyor/ci/jacebrowning/sappy/main.svg?label=window)](https://ci.appveyor.com/project/jacebrowning/sappy)
 [![Coverage Status](http://img.shields.io/coveralls/jacebrowning/sappy/main.svg)](https://coveralls.io/r/jacebrowning/sappy)
 [![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/jacebrowning/sappy.svg)](https://scrutinizer-ci.com/g/jacebrowning/sappy/?branch=main)
