@@ -55,15 +55,14 @@ types-requests = "*"
 
 # Testing
 pytest = "^7.3"
-pytest-cov = "*"
+pytest-cov = "^4.1"
 pytest-describe = "^2.1"
 pytest-expecter = "^3.0"
 pytest-mock = "^2.0"
 pytest-random = "*"
 freezegun = "*"
 
-# Reports
-coveragespace = "^4.1"
+coveragespace = "^6.0"
 
 # Documentation
 mkdocs = "^1.0"
@@ -109,6 +108,7 @@ addopts = """
 --no-cov-on-fail
 """
 
+# Reports
 cache_dir = ".cache/pytest/"
 
 markers = []
