@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: Gr1N/setup-poetry@v4
+    - uses: Gr1N/setup-poetry@v8
 
     - name: Check dependencies
       run: make doctor
@@ -37,8 +37,7 @@ jobs:
     - name: Test code
       run: make test
 
-    # TODO: Enable coverage upload
-    # - name: Upload coverage
-    #   uses: coverallsapp/github-action@master
-    #   with:
-    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload coverage
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
