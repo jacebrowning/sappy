@@ -39,7 +39,7 @@ This project builds on the existing web server code to forward all requests to t
 
 ## Requirements
 
-* Python 3.6+
+* Python 3.8+
 
 ## Installation
 
