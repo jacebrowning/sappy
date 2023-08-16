@@ -1,7 +1,7 @@
 [tool.poetry]
 
 name = "sappy"
-version = "1.2b1"
+version = "1.2b2"
 description = "Single-page application server for end-to-end testing."
 
 license = "MIT"
@@ -14,12 +14,7 @@ homepage = "https://pypi.org/project/sappy"
 documentation = "https://sappy.readthedocs.io"
 repository = "https://github.com/jacebrowning/sappy"
 
-keywords = [
-    "testing",
-    "end-to-end",
-    "single-page-application",
-    "web-servicer",
-]
+keywords = ["testing", "end-to-end", "single-page-application", "web-servicer"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -29,17 +24,17 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Software Development",
     "Topic :: Software Development :: Testing",
 ]
 
 [tool.poetry.dependencies]
 
-python = "^3.6"
+python = "^3.8"
 
 click = "^7.0"
 minilog = "^2.0"

@@ -3,7 +3,7 @@
 ## 1.2 (beta)
 
 - Added basic authentication support via `SAPPY_BASIC_AUTH`.
-- Dropped support for Python 3.5.
+- Dropped support for Python 3.5, 3.6, and 3.7.
 
 ## 1.1 (2017/03/21)
 
