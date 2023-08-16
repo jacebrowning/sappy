@@ -36,25 +36,28 @@ classifiers = [
 
 python = "^3.8"
 
-click = "^7.0"
+click = "^8.0"
 minilog = "^2.0"
 
 [tool.poetry.dev-dependencies]
 
 # Formatters
-black = "=20.8b1"
-isort = "=5.5.1"
+black = "^23.7"
+isort = "^5.12"
 
 # Linters
-mypy = "~0.782"
-pydocstyle = "*"
-pylint = "~2.6.0"
+mypy = "^1.0"
+pydocstyle = "^6.1"
+pylint = "~2.15"
+wrapt = "*"            # missing 'pylint' dependency
+types-setuptools = "*"
+types-requests = "*"
 
 # Testing
-pytest = "^5.4.3"
+pytest = "^7.3"
 pytest-cov = "*"
-pytest-describe = { git = "https://github.com/pytest-dev/pytest-describe", rev = "9014bf3ee564518aad3622b5f035f7ca6139e398" }
-pytest-expecter = "^2.0"
+pytest-describe = "^2.1"
+pytest-expecter = "^3.0"
 pytest-mock = "^2.0"
 pytest-vcr = "^1.0.2"
 pytest-random = "*"
@@ -77,6 +80,39 @@ rope = "^0.18"
 [tool.poetry.scripts]
 
 sappy = "sappy.cli:main"
+
+[tool.black]
+
+quiet = true
+
+[tool.isort]
+
+profile = "black"
+
+[tool.mypy]
+
+ignore_missing_imports = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+cache_dir = ".cache/mypy/"
+
+[tool.pytest.ini_options]
+
+addopts = """
+--strict-markers
+
+-r sxX
+--show-capture=log
+
+--cov-report=html
+--cov-report=term-missing:skip-covered
+--no-cov-on-fail
+"""
+
+cache_dir = ".cache/pytest/"
+
+markers = []
 
 [build-system]
 

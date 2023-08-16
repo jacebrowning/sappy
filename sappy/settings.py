@@ -4,7 +4,6 @@ import base64
 import os
 import sys
 
-
 sys.argv[0] = "sappy"  # use a consistent name regardless of program invocation
 
 DEFAULT_PATHS = "dist", "site", "_site", "public"

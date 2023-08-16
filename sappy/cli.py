@@ -4,7 +4,6 @@ import click
 
 from . import __version__, server
 
-
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 ReadableDirectory = click.Path(exists=True, readable=True, file_okay=False)

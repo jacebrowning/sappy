@@ -4,10 +4,7 @@ MODULES := $(wildcard $(PACKAGE)/*.py)
 # MAIN TASKS ##################################################################
 
 .PHONY: all
-all: install
-
-.PHONY: ci
-ci: format check test mkdocs ## Run all tasks that determine CI status
+all: format check test mkdocs ## Run all tasks that determine CI status
 
 .PHONY: watch
 watch: install .clean-test ## Continuously run all CI tasks when files chanage
@@ -59,7 +56,7 @@ check: install format  ## Run formaters, linters, and static analysis
 ifdef CI
 	git diff --exit-code
 endif
-	poetry run mypy $(PACKAGE) tests --config-file=.mypy.ini
+	poetry run mypy $(PACKAGE) tests
 	poetry run pylint $(PACKAGE) tests --rcfile=.pylint.ini
 	poetry run pydocstyle $(PACKAGE) tests
 
@@ -198,7 +195,7 @@ clean-all: clean
 # HELP ########################################################################
 
 .PHONY: help
-help: all
+help: install
 	@ grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .DEFAULT_GOAL := help
