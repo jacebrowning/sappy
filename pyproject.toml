@@ -59,7 +59,6 @@ pytest-cov = "*"
 pytest-describe = "^2.1"
 pytest-expecter = "^3.0"
 pytest-mock = "^2.0"
-pytest-vcr = "^1.0.2"
 pytest-random = "*"
 freezegun = "*"
 
