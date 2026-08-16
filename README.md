@@ -35,29 +35,27 @@ $ curl http://localhost:8080/login
 
 This project builds on the existing web server code to forward all requests to the index. The single-page application’s client-side routing can then display the page that corresponds to that request’s URL.
 
-# Setup
+## Setup
 
-## Requirements
+### Requirements
 
-* Python 3.10+
+- Python 3.10+
 
-## Installation
+### Installation
 
-Install `sappy` with pip:
-
-```sh
-$ pip install sappy
-```
-
-or directly from the source code:
+Install this tool globally with [pipx](https://pipxproject.github.io/pipx/) (or pip):
 
 ```sh
-$ git clone https://github.com/jacebrowning/sappy.git
-$ cd sappy
-$ python setup.py install
+$ pipx install sappy
 ```
 
-# Usage
+or add it to your [Poetry](https://python-poetry.org/docs/) project:
+
+```sh
+$ poetry add sappy
+```
+
+## Usage
 
 Build your static website (e.g. an Ember application) for production:
 
