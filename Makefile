@@ -40,7 +40,7 @@ $(DEPENDENCIES): poetry.lock
 
 ifndef CI
 poetry.lock: pyproject.toml
-	poetry lock --no-update
+	poetry lock
 	@ touch $@
 endif
 
@@ -134,9 +134,9 @@ $(MKDOCS_INDEX): docs/requirements.txt mkdocs.yml docs/*.md
 	poetry run mkdocs build --clean --strict
 
 docs/requirements.txt: poetry.lock
-	@ poetry export --with dev --without-hashes | grep mkdocs > $@
-	@ poetry export --with dev --without-hashes | grep pygments >> $@
-	@ poetry export --with dev --without-hashes | grep jinja2 >> $@
+	@ poetry show mkdocs --no-ansi | awk '/^ version/{print "mkdocs==" $$3}' > $@
+	@ poetry show pygments --no-ansi | awk '/^ version/{print "pygments==" $$3}' >> $@
+	@ poetry show Jinja2 --no-ansi | awk '/^ version/{print "jinja2==" $$3}' >> $@
 
 .PHONY: uml
 uml: install docs/*.png
