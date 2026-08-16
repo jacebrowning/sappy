@@ -53,6 +53,7 @@ pylint = "~2.15"
 wrapt = "*"            # missing 'pylint' dependency
 types-setuptools = "*"
 types-requests = "*"
+typed-ast = "*"
 
 # Testing
 pytest = "^7.3"
