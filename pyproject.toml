@@ -24,8 +24,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Topic :: Software Development",
@@ -34,12 +32,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 
-python = "^3.8"
+python = "^3.10"
 
 click = "^8.0"
 minilog = "^2.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 
 # Formatters
 black = "^23.7"
@@ -62,10 +60,10 @@ pytest-mock = "^2.0"
 pytest-random = "*"
 freezegun = "*"
 
-coveragespace = "^6.0"
+coveragespace = "^6.2"
 
 # Documentation
-mkdocs = "^1.0"
+mkdocs = "^1.6"
 pygments = "*"
 
 # Tooling
