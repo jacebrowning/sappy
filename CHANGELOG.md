@@ -1,6 +1,6 @@
 # Revision History
 
-## Unreleased
+## 1.3 (2026-08-16)
 
 - Dropped support for Python 3.8 and 3.9.
 
