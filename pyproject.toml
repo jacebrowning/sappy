@@ -47,13 +47,11 @@ black = "^26"
 isort = "^5.12"
 
 # Linters
-mypy = "^1.0"
+mypy = "^1.18"
 pydocstyle = "^6.1"
-pylint = "~2.15"
-wrapt = "*"            # missing 'pylint' dependency
+pylint = "^3.3"
 types-setuptools = "*"
 types-requests = "*"
-typed-ast = "*"
 
 # Testing
 pytest = "^7.3"
