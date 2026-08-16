@@ -43,7 +43,7 @@ minilog = "^2.0"
 [tool.poetry.group.dev.dependencies]
 
 # Formatters
-black = "^23.7"
+black = "^26"
 isort = "^5.12"
 
 # Linters
