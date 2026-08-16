@@ -1,5 +1,9 @@
 # Revision History
 
+## Unreleased
+
+- Dropped support for Python 3.8 and 3.9.
+
 ## 1.2 (2023-08-16)
 
 - Added basic authentication support via `SAPPY_BASIC_AUTH`.
