@@ -38,6 +38,7 @@ jobs:
       run: make test
 
     - name: Upload coverage
+      if: ${{ !github.event.repository.fork }}
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
