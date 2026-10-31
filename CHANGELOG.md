@@ -1,5 +1,9 @@
 # Revision History
 
+## 1.4 (2026-10-31)
+
+- Added support for Python 3.15.
+
 ## 1.3 (2026-08-16)
 
 - Dropped support for Python 3.8 and 3.9.
