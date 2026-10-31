@@ -51,6 +51,7 @@ isort = "^5.12"
 mypy = "^1.18"
 pydocstyle = "^6.1"
 pylint = "^3.3"
+dill = { git = "https://github.com/uqfoundation/dill", rev = "2308ffb0d0c605b9c050fa4c9fd5793d65c67022" } # use 0.4.2 when available
 types-setuptools = "*"
 types-requests = "*"
 
